@@ -30,9 +30,9 @@ export function init() {
   plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
   plane.rotation.x = -.5 * Math.PI;
-  plane.position.x = 15;
+  plane.position.x = 30;
   plane.position.y = 0;
-  plane.position.z = 0;
+  plane.position.z = 10;
   plane.receiveShadow = true;
 
   scene.add(plane);
@@ -41,9 +41,9 @@ export function init() {
   var cubeMaterial = new THREE.MeshLambertMaterial({color: 0xff0000});
   var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
 
-  cube.position.x = -4;
+  cube.position.x = 4;
   cube.position.y = 3;
-  cube.position.z = 0;
+  cube.position.z = 5;
   cube.castShadow = true;
 
   scene.add(cube);
@@ -52,9 +52,9 @@ export function init() {
   var sphereMaterial = new THREE.MeshLambertMaterial({color: 0x7777ff});
   var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
 
-  sphere.position.x = 20;
+  sphere.position.x = 30;
   sphere.position.y = 4;
-  sphere.position.z = 2;
+  sphere.position.z = 5;
   sphere.castShadow = true;
   scene.add(sphere);
 
@@ -72,14 +72,15 @@ export function init() {
   $('#WebGL-output').replaceWith(renderer.domElement);
   // renderer.render( scene, camera );
   var step = 0;
+
   function animate() {
     cube.rotation.x += .02;
     cube.rotation.y += .02;
     cube.rotation.z += .02;
 
     step += .04;
-    sphere.position.x = 20 + ( 5 * Math.cos(step) );
-    sphere.position.y = 2 + ( 5 * Math.abs(Math.sin(step)) );
+    sphere.position.x = 30 + ( 10 * Math.cos(step) );
+    sphere.position.y = 4 + ( 5 * Math.abs(Math.sin(step)) );
     
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
@@ -99,36 +100,36 @@ export function init() {
 
 }
 
-var cubes = 0;
+var cubes = [];
 
 export function addCube() {
-  var cubeSize = Math.ceil(Math.random() * 30);
+  var cubeSize = Math.ceil(Math.random() * 3);
   var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
 
   var cubeMaterial = new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff});
   var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+  cubes.push(cube);
   cube.castShadow = true;
-  cubes ++;
-  cube.name = "cube-" + cubes;
+  cube.name = "cube-" + cubes.length;
 
-  cube.position.x = 3 + Math.round(Math.random() * planeGeometry.width);
+  cube.rotation.x = Math.random() * Math.PI;
+  cube.position.x = Math.round(Math.random() * planeGeometry.parameters.width);
   cube.position.y = Math.round(Math.random() * 5);
-  cube.position.z = 2 + Math.round(Math.random() * planeGeometry.height);
+  cube.position.z = Math.round(Math.random() * planeGeometry.parameters.height);
 
   scene.add(cube);
   renderer.render( scene, camera );
 }
 
 export function removeCube() {
-  var lastCube = scene.getObjectByName("cube-" + cube);
-  scene.remove(lastCube);
-  cubes --;
+  if (cubes.length) {
+    scene.remove(cubes.pop());
+  }
+  renderer.render( scene, camera );
 }
 
 export function printCubes() {
-  for (var i = 0; i < cubes; i ++) {
-    console.log(scene.getObjectByName("cube-" + (i + 1)));
-  }
+  cubes.forEach(console.log);
 }
 
 
