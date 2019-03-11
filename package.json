@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "jquery": "^3.3.1",
+    "stats.js": "https://github.com/mrdoob/stats.js.git",
     "three": "^0.102.1"
   },
   "devDependencies": {

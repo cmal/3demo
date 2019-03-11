@@ -1,24 +1,33 @@
 import * as THREE from 'three';
 import * as $ from 'jquery';
+import * as stats from 'stats.js';
 
-export default function init() {
+var renderer;
+var camera;
+var scene;
+var axes;
+var plane;
+var planeGeometry;
+var planeMaterial;
 
-  var renderer = new THREE.WebGLRenderer();
+export function init() {
+
+  renderer = new THREE.WebGLRenderer();
   renderer.setClearColor(new THREE.Color(0xEEEEEE, 1.0));
   renderer.setSize(innerWidth, innerHeight);
   renderer.shadowMapEnabled = true;
 
-  var camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, .1, 1000);
+  camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, .1, 1000);
 
-  var scene = new THREE.Scene();
+  scene = new THREE.Scene();
 
-  var axes = new THREE.AxesHelper(20);
+  axes = new THREE.AxesHelper(20);
   scene.add(axes);
 
 
-  var planeGeometry = new THREE.PlaneGeometry(60, 20, 1, 1);
-  var planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
-  var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+  planeGeometry = new THREE.PlaneGeometry(60, 20, 1, 1);
+  planeMaterial = new THREE.MeshLambertMaterial({color: 0xffffff});
+  plane = new THREE.Mesh(planeGeometry, planeMaterial);
 
   plane.rotation.x = -.5 * Math.PI;
   plane.position.x = 15;
@@ -54,9 +63,8 @@ export default function init() {
   spotLight.castShadow = true;
   scene.add(spotLight);
 
-  // var ambientLight = new THREE.AmbientLight( 0xffffff );
-  // ambientLight.castShadow = true;
-  // scene.add(ambientLight);
+  var ambientLight = new THREE.AmbientLight( 0x0c0c0c );
+  scene.add(ambientLight);
   
   camera.position.set(-30,40,30);
   camera.lookAt(scene.position);
@@ -77,5 +85,51 @@ export default function init() {
     renderer.render( scene, camera );
   }
   animate();
+
+  bindResizeEvent();
+  function bindResizeEvent() {
+    window.addEventListener('resize', onResize, false);
+  }
+
+  function onResize() {
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  }
+
 }
+
+var cubes = 0;
+
+export function addCube() {
+  var cubeSize = Math.ceil(Math.random() * 30);
+  var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+
+  var cubeMaterial = new THREE.MeshLambertMaterial({color: Math.random() * 0xffffff});
+  var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+  cube.castShadow = true;
+  cubes ++;
+  cube.name = "cube-" + cubes;
+
+  cube.position.x = 3 + Math.round(Math.random() * planeGeometry.width);
+  cube.position.y = Math.round(Math.random() * 5);
+  cube.position.z = 2 + Math.round(Math.random() * planeGeometry.height);
+
+  scene.add(cube);
+  renderer.render( scene, camera );
+}
+
+export function removeCube() {
+  var lastCube = scene.getObjectByName("cube-" + cube);
+  scene.remove(lastCube);
+  cubes --;
+}
+
+export function printCubes() {
+  for (var i = 0; i < cubes; i ++) {
+    console.log(scene.getObjectByName("cube-" + (i + 1)));
+  }
+}
+
+
 
