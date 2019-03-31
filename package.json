@@ -5,11 +5,14 @@
   "author": "Yu Zhao <yu.zhao@joudou.com>",
   "license": "MIT",
   "dependencies": {
+    "dat.gui": "^0.7.6",
     "jquery": "^3.3.1",
-    "stats.js": "https://github.com/mrdoob/stats.js.git",
     "three": "^0.102.1"
   },
   "devDependencies": {
+    "css-loader": "^2.1.1",
+    "file-loader": "^3.0.1",
+    "style-loader": "^0.23.1",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.2.1"

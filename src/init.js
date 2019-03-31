@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as $ from 'jquery';
-import * as stats from 'stats.js';
+import * as dat from 'dat.gui';
 
 var renderer;
 var camera;
@@ -69,23 +69,34 @@ export function init() {
   camera.position.set(-30,40,30);
   camera.lookAt(scene.position);
   
-  $('#WebGL-output').replaceWith(renderer.domElement);
+  $('#webgl').replaceWith(renderer.domElement);
   // renderer.render( scene, camera );
   var step = 0;
 
-  function animate() {
-    cube.rotation.x += .02;
-    cube.rotation.y += .02;
-    cube.rotation.z += .02;
+  var stats = initStats();
 
-    step += .04;
+  var controls = new function() {
+    this.rotationSpeed = 0.02;
+    this.bouncingSpeed = 0.03;
+  };
+  var gui = new dat.GUI();
+  gui.add(controls, 'rotationSpeed', 0, 0.5);
+  gui.add(controls, 'bouncingSpeed', 0, 0.5);
+
+  function renderScene() {
+    stats.update();
+    cube.rotation.x += controls.rotationSpeed;
+    cube.rotation.y += controls.rotationSpeed;
+    cube.rotation.z += controls.rotationSpeed;
+
+    step += controls.bouncingSpeed;
     sphere.position.x = 30 + ( 10 * Math.cos(step) );
     sphere.position.y = 4 + ( 5 * Math.abs(Math.sin(step)) );
     
-    requestAnimationFrame( animate );
+    requestAnimationFrame( renderScene );
     renderer.render( scene, camera );
   }
-  animate();
+  renderScene();
 
   bindResizeEvent();
   function bindResizeEvent() {
@@ -97,7 +108,7 @@ export function init() {
     camera.updateProjectionMatrix();
     renderer.setSize(innerWidth, innerHeight);
   }
-
+  
 }
 
 var cubes = [];
@@ -132,5 +143,12 @@ export function printCubes() {
   cubes.forEach(console.log);
 }
 
-
-
+function initStats() {
+  var stats = new Stats();
+  stats.setMode(0);
+  stats.domElement.style.position = 'absolute';
+  stats.domElement.style.left = '0px';
+  stats.domElement.style.top = '0px';
+  document.getElementById("stats").appendChild( stats.domElement );
+  return stats;
+}

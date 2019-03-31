@@ -5,20 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <title>threejs</title>
-
-    <style>
-     body {
-       margin: 0;
-       overflow: hidden;
-     }
-    </style>
   </head>
   <body>
-    <button id="add-cube" onclick="addCube()">Add Cube</button>
-    <button id="remove-cube" onclick="removeCube()">remove Cube</button>
-    <button id="print-cubes" onclick="printCubes()">print Cubes</button>
-    <div id="WebGL-output"></div>
-    <script src="/vendor.js"></script>
-    <script src="/app.js"></script>
+    <div id="stats"></div>
+    <div id="controls">
+      <button id="add-cube" onclick="addCube()">Add Cube</button>
+      <button id="remove-cube" onclick="removeCube()">remove Cube</button>
+      <button id="print-cubes" onclick="printCubes()">print Cubes</button>
+    </div>
+    <div id="webgl"></div>
+    <script src="/stats.min.js"></script>
+    <script src="/vendor.bundle.js"></script>
+    <script src="/app.bundle.js"></script>
   </body>
 </html>

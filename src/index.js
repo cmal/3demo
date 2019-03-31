@@ -1,4 +1,5 @@
 import {init, addCube, removeCube, printCubes} from './init.js';
+import style from './css/base.css';
 
 window.onload = init;
 window.addCube = addCube;

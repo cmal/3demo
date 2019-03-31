@@ -1,0 +1,22 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+#controls {
+    position: absolute;
+    top: 80px;
+    left: 20px;
+}
+
+button {
+    display: block;
+    height: 32px;
+    width: 140px;
+    background: #222;
+    color: #ddd;
+    font-size: 16px;
+    border-radius: 4px;
+    margin-top: 10px;
+    z-index: 10;
+}
