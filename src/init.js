@@ -1,6 +1,11 @@
-import * as THREE from 'three';
+//import * as THREE from 'three';
 import * as $ from 'jquery';
 import * as dat from 'dat.gui';
+import 'three/examples/js/QuickHull';
+import 'three/examples/js/geometries/ConvexGeometry.js';
+import 'three/examples/js/controls/OrbitControls.js';
+import 'three/examples/js/ParametricGeometries.js';
+import 'three/examples/js/utils/SceneUtils.js';
 
 var renderer;
 var camera;
@@ -75,13 +80,11 @@ export function init() {
 
   var stats = initStats();
 
-  var controls = new function() {
-    this.rotationSpeed = 0.02;
-    this.bouncingSpeed = 0.03;
-  };
-  var gui = new dat.GUI();
-  gui.add(controls, 'rotationSpeed', 0, 0.5);
-  gui.add(controls, 'bouncingSpeed', 0, 0.5);
+  var controls = initControls();
+
+  // addFog();
+  // overrideMaterial();
+  addGeometries();
 
   function renderScene() {
     stats.update();
@@ -151,4 +154,108 @@ function initStats() {
   stats.domElement.style.top = '0px';
   document.getElementById("stats").appendChild( stats.domElement );
   return stats;
+}
+
+function initControls() {
+  var controls = new function() {
+    this.rotationSpeed = 0.2;
+    this.bouncingSpeed = 0.3;
+  };
+  var gui = new dat.GUI();
+  gui.add(controls, 'rotationSpeed', 0, 0.5);
+  gui.add(controls, 'bouncingSpeed', 0, 0.5);
+  return controls;
+}
+
+function addFog() {
+  // scene.fog = new THREE.Fog(0xffffff, 0.015, 100);
+  scene.fog = new THREE.FogExp2(0xffffff, 0.01);
+}
+
+function overrideMaterial() {
+  scene.overrideMaterial = new THREE.MeshLambertMaterial({
+    color: 0xffffff
+  });
+}
+
+
+function addGeometries() {
+  var geoms = [];
+  geoms.push(new THREE.CylinderGeometry(1,4,4));
+  // basic cube
+  geoms.push(new THREE.CubeGeometry(2,2,2));
+  // console.log(new THREE.CubeGeometry(2,2,2));
+  // basic spherer
+  geoms.push(new THREE.SphereGeometry(2));
+  geoms.push(new THREE.IcosahedronGeometry(4));
+  // create a convex shape (a shape without dents)
+  // using a couple of points
+  // for instance a cube
+  var points = [
+    new THREE.Vector3( 2, 2, 2 ),
+    new THREE.Vector3( 2, 2, -2 ),
+    new THREE.Vector3( -2, 2, -2 ),
+    new THREE.Vector3( -2, 2, 2 ),
+    new THREE.Vector3( 2, -2, 2 ),
+    new THREE.Vector3( 2, -2, -2 ),
+    new THREE.Vector3( -2, -2, -2 ),
+    new THREE.Vector3( -2, -2, 2 )
+  ];
+  geoms.push(new THREE.ConvexGeometry(points));
+  // create a lathgeometry
+  // http://en.wikipedia.org/wiki/Lathe_(graphics)
+
+  // points array - the path profile points will be stored here
+  var pts = [];
+  // half-circle detail - how many angle increments will be used to generate points
+  var detail = .1;
+  // radius for half_sphere
+  var radius = 3;
+
+  // loop from 0.0 radians to PI (0 - 180 degrees)
+  for(var angle = 0.0; angle < Math.PI ; angle += detail) {
+    // angle/radius to x,z
+    pts.push(new THREE.Vector3(Math.cos(angle) * radius, 0, Math.sin(angle) * radius));
+  }
+  geoms.push(new THREE.LatheGeometry( pts, 12 ));
+  // create a OctahedronGeometry
+  geoms.push(new THREE.OctahedronGeometry(3));
+  // create a geometry based on a function
+  geoms.push(new THREE.ParametricGeometry( THREE.ParametricGeometries.mobius3d, 20, 10 ));
+  geoms.push(new THREE.TetrahedronGeometry(3));
+  geoms.push(new THREE.TorusGeometry(3, 1, 10, 10));
+  geoms.push(new THREE.TorusKnotGeometry(3, 0.5, 50, 20));
+
+  var j = 0;
+  for (var i = 0 ; i < geoms.length ; i++) {
+    // var cubeMaterial = new THREE.MeshLambertMaterial({
+    //   wireframe: true,
+    //   color: Math.random() * 0xffffff
+    // });
+    var materials = [
+      new THREE.MeshLambertMaterial(
+        {
+          color: Math.random() * 0xffffff,
+          shading: THREE.FlatShading
+        }),
+      new THREE.MeshBasicMaterial(
+        {
+          color: 0x000000,
+          wireframe: true
+        })
+    ];
+    var mesh = THREE.SceneUtils.createMultiMaterialObject(geoms[i], materials);
+    mesh.traverse(function(e) {
+      e.castShadow=true;
+    });
+    // var mesh = new THREE.Mesh(geoms[i],materials[i]);
+    // mesh.castShadow=true;
+    mesh.position.x = -24 + ((i % 4) * 12);
+    mesh.position.y = 4;
+    mesh.position.z = -8 + (j * 12);
+    if ((i + 1) % 4 == 0) {
+      j ++;
+    }
+    scene.add(mesh);
+  }
 }

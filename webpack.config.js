@@ -54,5 +54,8 @@ module.exports = {
       filename: '[name].js.map',
       exclude: ['vendor.js']
     }),
+    new webpack.ProvidePlugin({
+      'THREE': require.resolve('three')
+    })
   ]
 };
